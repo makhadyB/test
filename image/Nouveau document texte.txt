@@ -1,0 +1,75 @@
+<?php
+session_start();
+
+if(isset($_POST['submit']) && !empty($_POST['login']) && !empty($_POST['password'])){
+    include("/xampp/htdocs/SOLUTION_B/config/db.php");
+    $login = htmlspecialchars($_POST['login']);
+    $password = $_POST['password'];
+    
+    $recupUser = $connexion->prepare("SELECT * FROM users WHERE login = ?");
+    $recupUser->execute([$login]);
+    
+    if($recupUser->rowCount() ==1){
+        $user = $recupUser->fetch();
+        
+        if(password_verify($password, $user['password'])){
+            $_SESSION['login'] = $login;
+            $_SESSION['id'] = $user['id'];
+            header("Location:acceuil.php");
+            exit();
+        } else {
+            $erreurMsg = "Mot de passe incorrect";
+            $redirect = "inscription.php";
+        }
+    } else {
+        $erreurMsg = "Login incorrect";
+        $redirect = "inscription.php";
+    }
+}
+
+?>
+
+
+
+<?php
+// Vérification si une redirection est nécessaire
+if(isset($erreurMsg) && isset($redirect)){
+    echo '<p>' . $erreurMsg . '</p>';
+    header("Refresh: 2; URL=" . $redirect);
+}
+?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+
+if(isset($_POST['submit']) ) {
+  if(!empty($_POST['login']) && !empty($_POST['password'])){
+  include("/xampp/htdocs/SOLUTION_B/config/db.php");
+  $login = htmlspecialchars($_POST['login']);
+  $password = $_POST['password'];
+  if(password_verify($password, $user['password'])){
+    $admin=getadmin($login,$password);
+    if($admin){
+        $_SESSION['masession']=$admin;
+        header("Location:acceuil.php");
+    }
+    else{
+      echo"Login ou mot de pass incorrecte"; 
+    }
+
+  }
+}
+}
